@@ -1,0 +1,102 @@
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: reader
+rules:
+- apiGroups: [""]
+  resources: ["routes","pods","pods/log","pods/status","services","services/proxy","configmaps","endpoints","secrets","serviceaccounts","namespaces","namespaces/status","resourcequotas/status","events","bindings","replicationcontrollers","persistentvolumeclaims"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: reader
+roleRef:
+  kind: Role
+  name: reader
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: default
+  apiGroup: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pipeline
+spec:
+  selector:
+    matchLabels:
+      run: pipeline
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: pipeline
+    spec:
+      containers:
+      - name: pipeline
+        image: ashraf1abdelrasool/pipeline:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 11111
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pipeline
+  labels:
+    run: pipeline
+spec:
+  ports:
+  - name: pipeline
+    protocol: pipeline
+    port: 11111
+    targetPort: 11111
+  type: LoadBalancer
+  selector:
+    run: pipeline
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asrevocast
+spec:
+  selector:
+    matchLabels:
+      run: asrevocast
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: asrevocast
+    spec:
+      containers:
+      - name: asrevocast
+        image: ashraf1abdelrasool/asrevocast:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asrevocast
+  labels:
+    run: asrevocast
+spec:
+  ports:
+  - name: asrevocast
+    protocol: asrevocast
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+  selector:
+    run: asrevocast
