@@ -16,3 +16,4 @@ spring:
               exchangeType: fanout
               durableSubscription: false
               acknowledgeMode: NONE
+              batchingEnabled: true
