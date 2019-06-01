@@ -15,10 +15,10 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.messaging.Message;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.ConnectableFlux;
-import reactor.core.publisher.DirectProcessor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxProcessor;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ReplayProcessor;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -32,7 +32,7 @@ public class AsrevocastApplication {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> function(ConnectableFlux<AdtsFrame> rtpPktsFlux) {
+    public RouterFunction<ServerResponse> function(Flux<AdtsFrame> rtpPktsFlux) {
         return route(GET("/aac/{ch}"), serverRequest -> ok()
                 .header("Content-Type", "audio/aac")
                 .body(rtpPktsFlux
@@ -41,22 +41,20 @@ public class AsrevocastApplication {
     }
 
     @Bean
-    public DirectProcessor<RtpPkt> rtpSource() {
-        return DirectProcessor.create();
+    public FluxProcessor<RtpPkt, RtpPkt> rtpSource() {
+        return ReplayProcessor.create(0);
 
     }
 
     @Bean
-    public ConnectableFlux<AdtsFrame> rtpPktsFlux(DirectProcessor<RtpPkt> rtpPkts) {
+    public Flux<AdtsFrame> rtpPktsFlux(FluxProcessor<RtpPkt, RtpPkt> rtpPkts) {
         RtpPktToAdtsFrame rtpPktToAdtsFrame = new RtpPktToAdtsFrame();
         return rtpPkts.publish().autoConnect()
-                .flatMap(it -> Mono.just(rtpPktToAdtsFrame.apply(it)).flatMapMany(Flux::fromIterable))
-                .publish()
-                ;
+                .flatMap(it -> Mono.just(rtpPktToAdtsFrame.apply(it)).flatMapMany(Flux::fromIterable));
     }
 
     @Autowired
-    private DirectProcessor<RtpPkt> rtpPkts;
+    private FluxProcessor<RtpPkt, RtpPkt> rtpPkts;
 
     @StreamListener(Sink.INPUT)
     public void new_video(Message<RtpPkt> event) {
