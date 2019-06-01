@@ -16,4 +16,3 @@ spring:
               exchangeType: fanout
               durableSubscription: false
               acknowledgeMode: NONE
-              deliveryMode: NON_PERSISTENT
