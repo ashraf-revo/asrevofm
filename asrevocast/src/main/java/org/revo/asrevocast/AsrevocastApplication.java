@@ -15,6 +15,7 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.messaging.Message;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.DirectProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,7 +32,7 @@ public class AsrevocastApplication {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> function(Flux<AdtsFrame> rtpPktsFlux) {
+    public RouterFunction<ServerResponse> function(ConnectableFlux<AdtsFrame> rtpPktsFlux) {
         return route(GET("/aac/{ch}"), serverRequest -> ok()
                 .header("Content-Type", "audio/aac")
                 .body(rtpPktsFlux
@@ -46,10 +47,12 @@ public class AsrevocastApplication {
     }
 
     @Bean
-    public Flux<AdtsFrame> rtpPktsFlux(DirectProcessor<RtpPkt> rtpPkts) {
+    public ConnectableFlux<AdtsFrame> rtpPktsFlux(DirectProcessor<RtpPkt> rtpPkts) {
         RtpPktToAdtsFrame rtpPktToAdtsFrame = new RtpPktToAdtsFrame();
         return rtpPkts.publish().autoConnect()
-                .flatMap(it -> Mono.just(rtpPktToAdtsFrame.apply(it)).flatMapMany(Flux::fromIterable));
+                .flatMap(it -> Mono.just(rtpPktToAdtsFrame.apply(it)).flatMapMany(Flux::fromIterable))
+                .publish()
+                ;
     }
 
     @Autowired
