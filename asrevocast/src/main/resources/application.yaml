@@ -2,7 +2,7 @@ spring:
   rabbitmq:
     username: rabbit
     password: RxxFqNGpScRe
-    host: rabbitmq-1-rabbitmq-svc
+    host: rabbitmq-1-rabbitmq-discovery
     virtual-host: rabbit
   cloud:
     stream:
