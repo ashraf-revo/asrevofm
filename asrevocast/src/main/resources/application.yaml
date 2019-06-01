@@ -1,9 +1,9 @@
 spring:
   rabbitmq:
-    username: rabbit
-    password: RxxFqNGpScRe
-    host: rabbitmq-1-rabbitmq-discovery
-    virtual-host: rabbit
+    username: nwxkdlml
+    password: cd9LnYXkcVzbzrBSYCDixZD3howw_k-O
+    host: rhino.rmq.cloudamqp.com
+    virtual-host: nwxkdlml
   cloud:
     stream:
       bindings:
