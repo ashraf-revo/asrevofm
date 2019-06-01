@@ -1,0 +1,12 @@
+spring:
+  rabbitmq:
+    username: nwxkdlml
+    password: cd9LnYXkcVzbzrBSYCDixZD3howw_k-O
+    host: rhino.rmq.cloudamqp.com
+    virtual-host: nwxkdlml
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: asrevo.new.rtp.pkt
+          group: s1
