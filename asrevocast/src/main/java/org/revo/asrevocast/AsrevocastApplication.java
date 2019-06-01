@@ -3,15 +3,16 @@ package org.revo.asrevocast;
 import org.revo.fm.codec.RtpPktToAdtsFrame;
 import org.revo.fm.codec.aac.AdtsFrame;
 import org.revo.fm.codec.rtp.RtpPkt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.messaging.Message;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.DirectProcessor;
@@ -51,12 +52,11 @@ public class AsrevocastApplication {
                 .flatMap(it -> Mono.just(rtpPktToAdtsFrame.apply(it)).flatMapMany(Flux::fromIterable));
     }
 
-    @Bean
-    public IntegrationFlow processUniCastUdpMessage(Sink sink, DirectProcessor<RtpPkt> rtpPkts) {
-        return IntegrationFlows
-                .from(sink.input())
-                .handle(it -> rtpPkts.onNext(((RtpPkt) it.getPayload())))
-                .get();
-    }
+    @Autowired
+    private DirectProcessor<RtpPkt> rtpPkts;
 
+    @StreamListener(Sink.INPUT)
+    public void new_video(Message<RtpPkt> event) {
+        rtpPkts.onNext(event.getPayload());
+    }
 }

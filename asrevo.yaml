@@ -57,7 +57,7 @@ metadata:
 spec:
   ports:
   - name: pipeline
-    protocol: udp
+    protocol: UDP
     port: 11111
     targetPort: 11111
   type: LoadBalancer
@@ -94,7 +94,7 @@ metadata:
 spec:
   ports:
   - name: asrevocast
-    protocol: tcp
+    protocol: TCP
     port: 80
     targetPort: 8080
   type: LoadBalancer
