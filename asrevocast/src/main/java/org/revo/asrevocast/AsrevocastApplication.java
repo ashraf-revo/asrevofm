@@ -57,7 +57,7 @@ public class AsrevocastApplication {
     private FluxProcessor<RtpPkt, RtpPkt> rtpPkts;
 
     @StreamListener(Sink.INPUT)
-    public void new_video(Message<RtpPkt> event) {
-        rtpPkts.onNext(event.getPayload());
+    public void new_video(Message<byte[]> event) {
+        rtpPkts.onNext(new RtpPkt(event.getPayload()));
     }
 }

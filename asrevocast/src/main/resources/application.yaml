@@ -10,6 +10,7 @@ spring:
         input:
           destination: asrevo.new.rtp.pkt
           group: ${random.uuid}
+          contentType: application/octet-stream
       rabbit:
         bindings:
           input:

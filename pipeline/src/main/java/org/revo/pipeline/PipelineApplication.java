@@ -1,6 +1,5 @@
 package org.revo.pipeline;
 
-import org.revo.fm.codec.rtp.RtpPkt;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -22,7 +21,6 @@ public class PipelineApplication {
     public IntegrationFlow processUniCastUdpMessage(Source source) {
         return IntegrationFlows
                 .from(new UnicastReceivingChannelAdapter(11111))
-                .<byte[], RtpPkt>transform(RtpPkt::new)
                 .channel(source.output())
                 .get();
     }

@@ -9,6 +9,7 @@ spring:
       bindings:
         output:
           destination: asrevo.new.rtp.pkt
+          contentType: application/octet-stream
       rabbit:
         bindings:
           output:
@@ -16,4 +17,3 @@ spring:
               exchangeType: fanout
               durableSubscription: false
               acknowledgeMode: NONE
-              batchingEnabled: true
