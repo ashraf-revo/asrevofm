@@ -9,4 +9,10 @@ spring:
       bindings:
         output:
           destination: asrevo.new.rtp.pkt
-          group: s1
+      rabbit:
+        bindings:
+          output:
+            producer:
+              exchangeType: fanout
+              durableSubscription: false
+              acknowledgeMode: NONE

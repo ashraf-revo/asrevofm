@@ -23,9 +23,7 @@ public class PipelineApplication {
         return IntegrationFlows
                 .from(new UnicastReceivingChannelAdapter(11111))
                 .<byte[], RtpPkt>transform(RtpPkt::new)
-                .log()
                 .channel(source.output())
                 .get();
     }
-
 }

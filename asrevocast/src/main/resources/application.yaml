@@ -9,4 +9,11 @@ spring:
       bindings:
         input:
           destination: asrevo.new.rtp.pkt
-          group: s1
+          group: ${random.uuid}
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              exchangeType: fanout
+              durableSubscription: false
+              acknowledgeMode: NONE
