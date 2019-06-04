@@ -27,6 +27,19 @@ subjects:
   name: default
   apiGroup: ""
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default
+data:
+  default.yaml: |-
+    spring:
+      rabbitmq:
+        username: admin
+        password: admin
+        host: rabbitmq.default.svc.cluster.local
+        virtual-host: admin
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
